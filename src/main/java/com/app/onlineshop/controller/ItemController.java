@@ -7,11 +7,8 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
-import com.app.onlineshop.DTO.request.CustomerRequest;
 import com.app.onlineshop.DTO.request.ItemRequest;
-import com.app.onlineshop.DTO.response.CustomerResponse;
 import com.app.onlineshop.DTO.response.ItemResponse;
-import com.app.onlineshop.model.Customer;
 import com.app.onlineshop.model.Item;
 import com.app.onlineshop.service.ItemService;
 
@@ -23,6 +20,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("api/item")
+@CrossOrigin(origins = "http://localhost:4200")
 public class ItemController {
 
     @Autowired

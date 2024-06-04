@@ -54,14 +54,37 @@ public class OrderService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found");
         }
 
+        // Check if item is available
+        Item item = optionalItem.get();
+        if (!item.isAvailable()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item is not available");
+        }
+
+        // Check if there is enough stock
+        if (item.getStock() < orderRequest.getQuantity()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not enough stock for item");
+        }
+
+        // Calculate total price based on item price and quantity
+        Double totalPrice = item.getPrice() * orderRequest.getQuantity();
+
         // Create new order
         Order order = new Order();
         order.setOrderCode(orderRequest.getOrderCode());
         order.setOrderDate(orderRequest.getOrderDate() != null ? orderRequest.getOrderDate() : new Date());
-        order.setTotalPrice(orderRequest.getTotalPrice());
+        order.setTotalPrice(totalPrice); // Set total price calculated
         order.setQuantity(orderRequest.getQuantity());
         order.setCustomer(optionalCustomer.get());
-        order.setItem(optionalItem.get());
+        order.setItem(item);
+
+        // Update item stock
+        int newStock = item.getStock() - orderRequest.getQuantity();
+        item.setStock(newStock);
+
+        // Check if item is out of stock
+        if (newStock == 0) {
+            item.setAvailable(false);
+        }
 
         Order savedOrder = orderRepository.save(order);
 
@@ -80,22 +103,35 @@ public class OrderService {
         Optional<Order> optionalOrder = orderRepository.findById(orderId);
         if (optionalOrder.isPresent()) {
             Order existingOrder = optionalOrder.get();
+            int previousQuantity = existingOrder.getQuantity();
+            Item item = existingOrder.getItem();
+            if (!item.isAvailable()) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Item is not available");
+            }
+
+            int quantityDifference = orderRequest.getQuantity() - previousQuantity;
+
+            if (quantityDifference != 0) {
+                int newStock = item.getStock() - quantityDifference;
+                if (newStock < 0) {
+                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Not enough stock for item");
+                }
+
+                // Update item stock
+                item.setStock(newStock);
+
+                // Check if item is out of stock
+                if (newStock == 0) {
+                    item.setAvailable(false);
+                }
+            }
+
+            // Update the order details
             existingOrder.setOrderCode(orderRequest.getOrderCode());
             existingOrder.setOrderDate(orderRequest.getOrderDate() != null ? orderRequest.getOrderDate() : new Date());
-            existingOrder.setTotalPrice(orderRequest.getTotalPrice());
+            existingOrder.setTotalPrice(item.getPrice() * orderRequest.getQuantity()); // Update total price based on
+                                                                                       // new quantity
             existingOrder.setQuantity(orderRequest.getQuantity());
-
-            Optional<Customer> optionalCustomer = customerRepository.findById(orderRequest.getCustomerId());
-            if (!optionalCustomer.isPresent()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found");
-            }
-            existingOrder.setCustomer(optionalCustomer.get());
-
-            Optional<Item> optionalItem = itemRepository.findById(orderRequest.getItemId());
-            if (!optionalItem.isPresent()) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found");
-            }
-            existingOrder.setItem(optionalItem.get());
 
             Order updatedOrder = orderRepository.save(existingOrder);
 

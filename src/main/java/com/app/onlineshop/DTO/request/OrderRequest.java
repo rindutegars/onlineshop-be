@@ -16,8 +16,6 @@ public class OrderRequest {
     @NotNull(message = "Order date is required")
     private Date orderDate;
 
-    @NotNull(message = "Total price is required")
-    @Min(value = 0, message = "Total price must be non-negative")
     private Double totalPrice;
 
     @Min(value = 1, message = "Quantity must be at least 1")

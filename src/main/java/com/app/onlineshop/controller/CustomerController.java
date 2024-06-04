@@ -6,12 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
 import com.app.onlineshop.DTO.request.CustomerRequest;
 import com.app.onlineshop.DTO.response.CustomerResponse;
 import com.app.onlineshop.model.Customer;
 import com.app.onlineshop.service.CustomerService;
-
 import jakarta.validation.Valid;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,7 +63,7 @@ public class CustomerController {
 
     // Endpoint to create customer
     @PostMapping("/create")
-    public ResponseEntity<Object> createCustomer(@Valid @RequestBody CustomerRequest requestDTO) {
+    public ResponseEntity<Object> createCustomerWithPic(@ModelAttribute @Valid CustomerRequest requestDTO) {
         try {
             CustomerResponse response = customerService.createCustomer(requestDTO);
             Map<String, Object> responseBody = new LinkedHashMap<>();
@@ -83,7 +81,7 @@ public class CustomerController {
     @PutMapping("/update/{customerId}")
     public ResponseEntity<Object> updateCustomer(
             @PathVariable Long customerId,
-            @RequestBody CustomerRequest requestDTO) {
+            @ModelAttribute @Valid CustomerRequest requestDTO) {
         try {
             CustomerResponse response = customerService.updateCustomer(customerId, requestDTO);
             Map<String, Object> responseBody = new LinkedHashMap<>();

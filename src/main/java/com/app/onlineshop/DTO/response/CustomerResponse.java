@@ -3,6 +3,7 @@ package com.app.onlineshop.DTO.response;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -14,5 +15,6 @@ public class CustomerResponse {
     private String customerCode;
     private String customerPhone;
     private boolean isActive;
+    private Date lastOrder;
     private String pic;
 }

@@ -24,7 +24,6 @@ public class Customer {
     private String customerCode;
     private String customerPhone;
     private boolean isActive;
-    @Temporal(TemporalType.TIMESTAMP)
     private Date lastOrder;
     private String pic;
 }

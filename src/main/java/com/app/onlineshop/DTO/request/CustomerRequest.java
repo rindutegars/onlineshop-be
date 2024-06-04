@@ -1,8 +1,13 @@
 package com.app.onlineshop.DTO.request;
 
 import java.util.Date;
+
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 
@@ -23,9 +28,9 @@ public class CustomerRequest {
 
     private boolean isActive;
 
-    // @NotNull(message = "Last order date is required")
-    // private Date lastOrder;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date lastOrder;
 
-    @NotBlank(message = "Picture is required")
-    private String pic;
+    private MultipartFile pic;
 }
